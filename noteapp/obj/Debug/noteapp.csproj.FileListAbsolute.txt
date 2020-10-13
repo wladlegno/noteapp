@@ -1,0 +1,14 @@
+E:\0points\reposWork\noteapp\noteapp\bin\Debug\noteapp.exe.config
+E:\0points\reposWork\noteapp\noteapp\bin\Debug\noteapp.exe
+E:\0points\reposWork\noteapp\noteapp\bin\Debug\noteapp.pdb
+E:\0points\reposWork\noteapp\noteapp\obj\Debug\noteapp.csprojAssemblyReference.cache
+E:\0points\reposWork\noteapp\noteapp\obj\Debug\MainWindow.g.cs
+E:\0points\reposWork\noteapp\noteapp\obj\Debug\App.g.cs
+E:\0points\reposWork\noteapp\noteapp\obj\Debug\noteapp_MarkupCompile.cache
+E:\0points\reposWork\noteapp\noteapp\obj\Debug\MainWindow.baml
+E:\0points\reposWork\noteapp\noteapp\obj\Debug\noteapp.g.resources
+E:\0points\reposWork\noteapp\noteapp\obj\Debug\noteapp.Properties.Resources.resources
+E:\0points\reposWork\noteapp\noteapp\obj\Debug\noteapp.csproj.GenerateResource.cache
+E:\0points\reposWork\noteapp\noteapp\obj\Debug\noteapp.csproj.CoreCompileInputs.cache
+E:\0points\reposWork\noteapp\noteapp\obj\Debug\noteapp.exe
+E:\0points\reposWork\noteapp\noteapp\obj\Debug\noteapp.pdb
