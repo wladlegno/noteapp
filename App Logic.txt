@@ -1,0 +1,6 @@
+NewNote()
+	TextRTBox, TitleRTBox cleared. If they have data, SaveNotePrompt() is called.
+
+NewNote()
+	If the contents have data, we call SaveNote(); then we clear.
+	else 
