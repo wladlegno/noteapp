@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "noteapp", "noteapp\noteapp.csproj", "{61DDC5DC-736A-4884-9204-0CD34F82EEC2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "noteappLib", "noteappLib\noteappLib.csproj", "{DE9CAD22-DE07-432E-AAEF-ABBA8E61165E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{61DDC5DC-736A-4884-9204-0CD34F82EEC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61DDC5DC-736A-4884-9204-0CD34F82EEC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61DDC5DC-736A-4884-9204-0CD34F82EEC2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE9CAD22-DE07-432E-AAEF-ABBA8E61165E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE9CAD22-DE07-432E-AAEF-ABBA8E61165E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE9CAD22-DE07-432E-AAEF-ABBA8E61165E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE9CAD22-DE07-432E-AAEF-ABBA8E61165E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -11,11 +12,13 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace noteapp
 {
     public class Note
     {
+        public string Path { get; set; }
         public string Title { get; set; }
         public string Body { get; set; }
     }
@@ -23,8 +26,9 @@ namespace noteapp
     public partial class MainWindow
     {
         private DataTable notes;
+        private Note currentNote = new Note {Body = "", Title = ""};
         private readonly string notesPath = AppDomain.CurrentDomain.BaseDirectory + @"notes\";
-        private bool changesPending;
+        private DispatcherTimer timer1;
 
         public MainWindow()
         {
@@ -37,62 +41,39 @@ namespace noteapp
             InitializeDataTable();
 
             TitleRTBox.Focus();
+
+            SaveNotePromptWindow dialog = new SaveNotePromptWindow();
+            // dialog.ShowDialog();
         }
 
-        private static string GenerateRandomName()
+        private void somefun(object sender, EventArgs eventArgs)
         {
-            Random random = new Random();
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            return new string(Enumerable.Repeat(chars, 10)
-                .Select(s => s[random.Next(s.Length)]).ToArray());
+            Console.WriteLine(ChangesPendingState());
+            Console.WriteLine(currentNote.Title);
         }
 
-        private static string GetNameFromPath(FileInfo path)
+        #region event handlers
+
+        private void OnChanges(object sender, KeyEventArgs e)
         {
-            return path.Name.Substring(0, path.Name.Length - path.Extension.Length);
+            ChangesPendingState();
         }
 
-        private string GetPathFromName(string name)
+        private void SaveNoteButton_OnClick(object sender, RoutedEventArgs e)
         {
-            return $"{notesPath + name}.txt";
+            SaveNote();
         }
 
-        private void InitializeDirectory()
+        private void NewNoteButton_OnClick(object sender, RoutedEventArgs e)
         {
-            Directory.CreateDirectory(notesPath);
+            NewNote();
         }
 
-        private void InitializeDataTable()
+        private void Row_OnMouseDoubleClick(object sender, MouseEventArgs e)
         {
-            notes = new DataTable();
-            notes.Columns.Add("Title", typeof(String));
-            DataRow row;
-            GetNotesList().ToList().ForEach(x =>
-            {
-                row = notes.NewRow();
-                row[0] = x;
-                Console.WriteLine(row.ItemArray[0]);
-                notes.Rows.Add(row);
-            });
-
-            NotesDGrid.DataContext = notes.DefaultView;
-            NotesDGrid.CanUserResizeRows = false;
-
-            NotesDGrid.ColumnWidth = new DataGridLength(210);
-            NotesDGrid.BorderThickness = new Thickness(0);
-            NotesDGrid.Background = new SolidColorBrush(Colors.White);
-        }
-
-        private void LoadNote(string noteTitle)
-        {
-            changesPending = false;
-            string path = GetPathFromName(noteTitle);
-            string
-                fileTitle = noteTitle,
-                fileBody = File.ReadAllText(path);
-            ClearContents();
-            TitleRTBox.Document.Blocks.Add(new Paragraph(new Run(fileTitle)));
-            TextRTBox.Document.Blocks.Add(new Paragraph(new Run(fileBody)));
+            DataRowView dataRowView = (DataRowView) NotesDGrid.SelectedItem;
+            string rowTitle = dataRowView["Title"].ToString();
+            LoadNote(rowTitle);
         }
 
         private void MainGrid_OnPreviewKeyDown(object sender, KeyEventArgs e)
@@ -104,25 +85,55 @@ namespace noteapp
                     break;
             }
         }
-
-        private void NewNoteButton_OnClick(object sender, RoutedEventArgs e)
+        
+        private void DeleteNoteButton_OnMouseDown(object sender, RoutedEventArgs routedEventArgs)
         {
-            NewNote();
+            DeleteNote(currentNote.Path);
         }
 
-        private static string GetDataFromBox(RichTextBox rtb)
+        #endregion
+
+        #region methods
+
+        #region initializers
+
+        private void InitializeDirectory()
         {
-            TextRange textRange = new TextRange(
-                rtb.Document.ContentStart,
-                rtb.Document.ContentEnd
-            );
-            return textRange.Text.Trim();
+            Directory.CreateDirectory(notesPath);
         }
+
+        private void InitializeDataTable()
+        {
+            UpdateDataTable();
+
+            NotesDGrid.CanUserResizeRows = false;
+            NotesDGrid.ColumnWidth = new DataGridLength(210);
+            NotesDGrid.BorderThickness = new Thickness(0);
+            NotesDGrid.Background = new SolidColorBrush(Colors.White);
+        }
+
+        private void UpdateDataTable()
+        {
+            notes = new DataTable();
+            DataRow row;
+            notes.Columns.Add("Title", typeof(string));
+            GetNotesList().ToList().ForEach(x =>
+            {
+                row = notes.NewRow();
+                row[0] = x;
+                notes.Rows.Add(row);
+            });
+            NotesDGrid.DataContext = notes.DefaultView;
+        }
+
+        #endregion
+
+        #region file manipulation
 
         private void CreateFile(string filePath)
         {
             Console.WriteLine("CreateFile() called");
-            
+
             if (File.Exists(filePath))
             {
                 WriteFile(filePath);
@@ -143,7 +154,7 @@ namespace noteapp
         private void WriteFile(string filePath)
         {
             Console.WriteLine("WriteFile() called");
-            var dataToWrite = GetDataFromBox(TextRTBox);
+            string dataToWrite = GetDataFromBox(BodyRTBox);
 
             try
             {
@@ -155,23 +166,35 @@ namespace noteapp
             }
         }
 
-        private void SaveNoteButton_OnClick(object sender, RoutedEventArgs e)
+        #endregion
+
+        #region note manipulation
+
+        #region new note
+
+        private void NewNote()
         {
+            if (GetDataFromBox(TitleRTBox) == "" || GetDataFromBox(BodyRTBox) == "") return;
             SaveNote();
+            ClearContents();
         }
+
+        #endregion
+
+        #region save note
 
         private void SaveNote()
         {
-            if (!changesPending) return;
+            if (!ChangesPendingState())
+            {
+                return;
+            }
+
+            ;
             string title = GetDataFromBox(TitleRTBox);
             if (title == "")
-            {
                 SaveNotePrompt();
-            }
-            else
-            {
-                SaveNote(title);
-            }
+            SaveNote(title);
         }
 
         private void SaveNote(string title)
@@ -179,6 +202,7 @@ namespace noteapp
             Console.WriteLine("Save() called");
             string fullPath = notesPath + $"{title}.txt";
             CreateFile(fullPath);
+            UpdateDataTable();
         }
 
         private void SaveNotePrompt()
@@ -188,46 +212,116 @@ namespace noteapp
             // TODO: suggest the name typed into TitleRTBox by default
             Console.WriteLine("SavePrompt() called");
 
+
             string title = $"{GenerateRandomName()}";
             SaveNote(title);
         }
 
-        private void NewNote()
+        #endregion
+
+        #region load note
+
+        private void LoadNote(string noteTitle)
         {
-            if (changesPending)
+            if (ChangesPendingState())
             {
                 SaveNote();
-                return;
             }
-
-            if (GetDataFromBox(TextRTBox) == "") return;
-            ClearContents();
+            else
+            {
+                ClearContents();
+                string path = GetPathFromName(noteTitle);
+                currentNote = new Note {Path = path, Title = noteTitle, Body = File.ReadAllText(path)};
+                TitleRTBox.Document.Blocks.Add(new Paragraph(new Run(currentNote.Title)));
+                BodyRTBox.Document.Blocks.Add(new Paragraph(new Run(currentNote.Body)));
+            }
         }
+
+        #endregion
+
+        #region delete note
+
+        private void DeleteNote(string path)
+        {
+            File.Delete(path);
+            currentNote = new Note();
+            UpdateDataTable();
+        }
+        
+        #endregion
+
+        #region change note
 
         private void RenamePrompt(out string filePath)
         {
             Console.WriteLine("RenamePrompt() called");
+            filePath = "";
+        }
+
+        #endregion
+
+        #endregion
+
+        #endregion
+
+        #region helper methods
+
+        private static string GenerateRandomName()
+        {
+            Random random = new Random();
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, 10)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
+        private static string GetNameFromPath(FileInfo path)
+        {
+            return path.Name.Substring(0, path.Name.Length - path.Extension.Length);
+        }
+
+        private string GetPathFromName(string name)
+        {
+            return $"{notesPath + name}.txt";
+        }
+
+        private static string GetDataFromBox(RichTextBox rtb)
+        {
+            TextRange textRange = new TextRange(
+                rtb.Document.ContentStart,
+                rtb.Document.ContentEnd
+            );
+            return textRange.Text.Trim();
         }
 
         private void ClearContents()
         {
-            TextRTBox.Document.Blocks.Clear();
+            BodyRTBox.Document.Blocks.Clear();
             TitleRTBox.Document.Blocks.Clear();
         }
 
-        private IEnumerable<string> GetNotesList()
+        private bool ChangesPendingState()
         {
-            IEnumerable<FileInfo> noteList = new DirectoryInfo(notesPath).EnumerateFiles();
-            List<string> nl = new List<string>();
-            noteList.ToList().ForEach(x => { nl.Add(GetNameFromPath(x)); });
-            return nl;
+            string
+                title = GetDataFromBox(TitleRTBox),
+                body = GetDataFromBox(BodyRTBox);
+            string[]
+                inputData = {title, body},
+                noteData = {currentNote.Title, currentNote.Body};
+            bool changesPending = !inputData.SequenceEqual(noteData);
+            return changesPending;
         }
 
-        private void Row_OnMouseDoubleClick(object sender, MouseEventArgs e)
+        private List<string> GetNotesList()
         {
-            DataRowView dataRowView = (DataRowView) NotesDGrid.SelectedItem;
-            string rowTitle = dataRowView["Title"].ToString();
-            LoadNote(rowTitle);
+            /*IEnumerable<FileInfo> noteList = new DirectoryInfo(notesPath).EnumerateFiles();
+            List<string> nl = new List<string>();
+            noteList.ToList().ForEach(x => { nl.Add(GetNameFromPath(x)); });*/
+            DirectoryInfo dir = new DirectoryInfo(notesPath);
+            List<string> files = new List<string>();
+            dir.GetFiles().OrderBy(p => p.LastWriteTime).ToList().ForEach(x => { files.Add(GetNameFromPath(x)); });
+            return files;
         }
+
+        #endregion
     }
 }

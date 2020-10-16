@@ -12,3 +12,6 @@ E:\0points\reposWork\noteapp\noteapp\obj\Debug\noteapp.csproj.GenerateResource.c
 E:\0points\reposWork\noteapp\noteapp\obj\Debug\noteapp.csproj.CoreCompileInputs.cache
 E:\0points\reposWork\noteapp\noteapp\obj\Debug\noteapp.exe
 E:\0points\reposWork\noteapp\noteapp\obj\Debug\noteapp.pdb
+E:\0points\reposWork\noteapp\noteapp\obj\Debug\SaveNotePromptWindow.g.cs
+E:\0points\reposWork\noteapp\noteapp\obj\Debug\noteapp_MarkupCompile.lref
+E:\0points\reposWork\noteapp\noteapp\obj\Debug\SaveNotePromptWindow.baml

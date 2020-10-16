@@ -20,6 +20,7 @@
           <e p="Debug" t="Include">
             <e p="App.g.cs" t="Include" />
             <e p="MainWindow.g.cs" t="Include" />
+            <e p="SaveNotePromptWindow.g.cs" t="Include" />
           </e>
         </e>
         <e p="Properties" t="Include">
@@ -27,8 +28,22 @@
           <e p="Resources.Designer.cs" t="Include" />
           <e p="Resources.resx" t="Include" />
         </e>
+        <e p="SaveNotePromptWindow.xaml" t="Include" />
+        <e p="SaveNotePromptWindow.xaml.cs" t="Include" />
       </e>
       <e p="noteapp.sln" t="IncludeFlat" />
+      <e p="noteappLib" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="Note.cs" t="Include" />
+        <e p="noteappLib.csproj" t="IncludeRecursive" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp3.1" t="Include">
+              <e p="noteappLib.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+      </e>
       <e p="packages" t="ExcludeRecursive" />
     </e>
   </component>
